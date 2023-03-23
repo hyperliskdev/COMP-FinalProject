@@ -10,6 +10,7 @@ import os
 import inspect
 from pprint import pprint
 import sqlite3 
+import pandas
 
 def main():
     global db_path
@@ -23,8 +24,8 @@ def main():
     print_name_and_age(old_people_list)
 
     # Save the names and ages of all old people to a CSV file
-    # old_people_csv = os.path.join(script_dir, 'old_people.csv')
-    # save_name_and_age_to_csv(old_people_list, old_people_csv)
+    old_people_csv = os.path.join(script_dir, 'old_people.csv')
+    save_name_and_age_to_csv(old_people_list, old_people_csv)
 
 def get_old_people():
     """Queries the Social Network database for all people who are at least 50 years old.
@@ -37,12 +38,14 @@ def get_old_people():
     cur = con.cursor()
 
     # Query the database for all information for all people.
-    cur.execute('SELECT * FROM people WHERE age > 50')
+    cur.execute('SELECT name, age FROM people WHERE age > 50')
 
     # Fetch all query results.
     # The fetchall() method returns a list, where each list item
     # is a tuple containing data from one row in the people table.
     all_people = cur.fetchall()
+
+
 
     # Pretty print (pprint) outputs data in an easier to read format.
     pprint(all_people)
@@ -58,8 +61,8 @@ def print_name_and_age(name_and_age_list):
     Args:
         name_and_age_list (list): (name, age) of people
     """
-
-    
+    for name, age in name_and_age_list:
+        print(name + " is " + str(age) + " years old.")
     return
 
 def save_name_and_age_to_csv(name_and_age_list, csv_path):
@@ -69,7 +72,13 @@ def save_name_and_age_to_csv(name_and_age_list, csv_path):
         name_and_age_list (list): (name, age) of people
         csv_path (str): Path of CSV file
     """
-    # TODO: Create function body
+
+    # data = {"name": name_and_age_list, "age": name_and_age_list[1]}
+
+    df = pandas.DataFrame(name_and_age_list)
+
+    df.to_csv(csv_path)
+    
     return
 
 def get_script_dir():
